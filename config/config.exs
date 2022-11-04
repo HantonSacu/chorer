@@ -7,6 +7,12 @@
 # General application configuration
 import Config
 
+config :chorer, Chorer.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  migration_primary_key: [type: :binary_id],
+  migration_timestamps: [type: :utc_datetime_usec],
+  otp_app: :chorer
+
 config :chorer,
   ecto_repos: [Chorer.Repo]
 

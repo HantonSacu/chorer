@@ -1,5 +1,6 @@
 defmodule ChorerWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :chorer
+  use Absinthe.Phoenix.Endpoint
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -47,4 +48,18 @@ defmodule ChorerWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
   plug ChorerWeb.Router
+
+  # @impl Phoenix.Endpoint
+  # def init(_type, config) do
+  #   config =
+  #     config
+  #     |> Keyword.put(:secret_key_base, ChorerConfig.secret_key_base())
+  #     |> Keyword.update(:url, url_config(), &Keyword.merge(&1, url_config()))
+  #     |> Keyword.update(:http, http_config(), &(http_config() ++ (&1 || [])))
+
+  #   {:ok, config}
+  # end
+
+  # defp url_config, do: [host: ChorerConfig.host()]
+  # defp http_config, do: [:inet6, port: ChorerConfig.port()]
 end

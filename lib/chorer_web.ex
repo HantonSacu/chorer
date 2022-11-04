@@ -17,7 +17,7 @@ defmodule ChorerWeb do
   and import those modules here.
   """
 
-  def controller do
+  def controller(_opts) do
     quote do
       use Phoenix.Controller, namespace: ChorerWeb
 
@@ -27,11 +27,11 @@ defmodule ChorerWeb do
     end
   end
 
-  def view do
+  def view(opts) do
     quote do
-      use Phoenix.View,
-        root: "lib/chorer_web/templates",
-        namespace: ChorerWeb
+      default_opts = [root: Path.relative_to_cwd(__DIR__), path: ""]
+
+      use Phoenix.View, Keyword.merge(default_opts, unquote(opts))
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
@@ -42,32 +42,36 @@ defmodule ChorerWeb do
     end
   end
 
-  def live_view do
+  def live_view(opts) do
+    # Layaout is not set here for Surface component
     quote do
-      use Phoenix.LiveView,
-        layout: {ChorerWeb.LayoutView, "live.html"}
+      use Surface.LiveView, unquote(opts)
+      use Phoenix.HTML
+
+      alias Phoenix.LiveView.Socket
 
       unquote(view_helpers())
     end
   end
 
-  def live_component do
+  def live_component(_opts) do
     quote do
-      use Phoenix.LiveComponent
+      use Surface.LiveComponent
 
       unquote(view_helpers())
     end
   end
 
-  def component do
+  def component(_opts) do
     quote do
-      use Phoenix.Component
+      use Surface.Component
+      use Phoenix.HTML
 
       unquote(view_helpers())
     end
   end
 
-  def router do
+  def router(_opts) do
     quote do
       use Phoenix.Router
 
@@ -89,14 +93,10 @@ defmodule ChorerWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
-      import Phoenix.LiveView.Helpers
-
-      # Import basic rendering functionality (render, render_layout, etc)
-      import Phoenix.View
-
-      import ChorerWeb.ErrorHelpers
+      import Phoenix.HTML.FormData, only: [to_form: 2]
+      import ChorerWeb.Error.Helpers
       import ChorerWeb.Gettext
+
       alias ChorerWeb.Router.Helpers, as: Routes
     end
   end
@@ -104,7 +104,8 @@ defmodule ChorerWeb do
   @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """
-  defmacro __using__(which) when is_atom(which) do
-    apply(__MODULE__, which, [])
-  end
+  defmacro __using__(which), do: apply_fun(which)
+
+  defp apply_fun(fun) when is_atom(fun), do: apply_fun({fun, []})
+  defp apply_fun({fun, opts}), do: apply(__MODULE__, fun, [opts])
 end
