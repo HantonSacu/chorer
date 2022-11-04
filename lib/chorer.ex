@@ -2,8 +2,8 @@ defmodule Chorer do
   import Ecto.Changeset
   import Ecto.Query
 
-  alias ChorerSchemas.{Account, AccountFriend, Chore, Score, Token}
   alias Chorer.Repo
+  alias ChorerSchemas.{Account, AccountFriend, Chore, Score, Token}
   alias VBT.Accounts
 
   @type sign_up_params :: %{
@@ -85,7 +85,10 @@ defmodule Chorer do
   end
 
   @spec validate_password(String.t()) :: boolean()
-  def validate_password(_password), do: true
+  def validate_password(password) do
+    String.contains?(password, String.graphemes("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) and
+      String.contains?(password, String.graphemes("0123456789"))
+  end
 
   @spec password_reset_token_valid?(String.t()) :: boolean()
   def password_reset_token_valid?(token),
@@ -108,11 +111,7 @@ defmodule Chorer do
   @spec authenticate_account(String.t(), String.t()) ::
           {:ok, Account.t()} | {:error, :invalid}
   def authenticate_account(email, password) do
-    with {:ok, account} <- Accounts.authenticate(email, password, accounts_config()) do
-      {:ok, account}
-    else
-      {:error, :invalid} -> {:error, "Invalid email or password"}
-    end
+    Accounts.authenticate(email, password, accounts_config())
   end
 
   @spec create_account(register_params()) :: {:ok, Account.t()} | {:error, Ecto.Changeset.t()}
@@ -225,7 +224,7 @@ defmodule Chorer do
   def scores(account, period) do
     Enum.map(account.friends ++ [account], fn account ->
       name = "#{String.at(account.first_name, 0)}. #{String.at(account.last_name, 0)}."
-      scores = score_query(account.id, period) |> Repo.all()
+      scores = Repo.all(score_query(account.id, period))
       points = Enum.reduce(scores, 1, &(&2 + &1.points))
       {name, points}
     end)
@@ -271,8 +270,8 @@ defmodule Chorer do
     Repo.insert(%Score{points: points, account_id: account_id})
   end
 
-  defp required_chore_params,
-    do: [
+  defp required_chore_params do
+    [
       :title,
       :description,
       :state,
@@ -282,4 +281,5 @@ defmodule Chorer do
       :mental_difficulty,
       :physical_difficulty
     ]
+  end
 end

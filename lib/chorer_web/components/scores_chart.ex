@@ -1,4 +1,7 @@
 defmodule ChorerWeb.Components.ScoresChart do
+  @moduledoc """
+  Conveniences for translating and building error messages.
+  """
   use ChorerWeb, :live_component
 
   alias Contex.{Dataset, PieChart, Plot}
@@ -37,11 +40,11 @@ defmodule ChorerWeb.Components.ScoresChart do
       legend_setting: :legend_right
     ]
 
-    {:safe, list} = Plot.to_svg(Plot.new(dataset, Contex.PieChart, 600, 400, opts))
+    {:safe, list} = Plot.to_svg(Plot.new(dataset, PieChart, 600, 400, opts))
     {:safe, List.update_at(list, 3, fn _ -> svg_style() end)}
   end
 
-  defp svg_style,
-    do:
-      "<style type=\"text/css\"><![CDATA[\n  text {fill: white}\n  line {stroke: white}\n]]></style>\n"
+  defp svg_style do
+    "<style type=\"text/css\"><![CDATA[\n  text {fill: white}\n  line {stroke: white}\n]]></style>\n"
+  end
 end

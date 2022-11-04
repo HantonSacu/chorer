@@ -5,7 +5,7 @@ defmodule ChorerWeb.CommonComponents.DeleteButton do
   prop text, :string, required: true
   prop data_confirm, :string, default: "Are you sure?"
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <button
@@ -24,7 +24,7 @@ defmodule ChorerWeb.CommonComponents.SuccessButton do
 
   prop text, :string, required: true
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <button
@@ -42,7 +42,7 @@ defmodule ChorerWeb.CommonComponents.AcceptButton do
 
   prop text, :string, required: true
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <button

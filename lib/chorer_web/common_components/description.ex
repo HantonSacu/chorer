@@ -4,7 +4,7 @@ defmodule ChorerWeb.CommonComponents.DescriptionList do
 
   slot default
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div class="w-full px-6">
@@ -22,7 +22,7 @@ defmodule ChorerWeb.CommonComponents.DescriptionFlatRow do
   prop name, :string, required: true
   prop value, :string, required: true
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div class="flex flex-row py-5">
@@ -43,7 +43,7 @@ defmodule ChorerWeb.CommonComponents.DescriptionStackRow do
   prop name, :string, required: true
   prop value, :string, required: true
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div class="py-5">

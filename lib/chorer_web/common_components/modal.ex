@@ -8,7 +8,7 @@ defmodule ChorerWeb.CommonComponents.Modal do
   prop title, :string
   prop close_path, :string, required: true
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div class="fixed z-10 inset-0 overflow-y-auto">

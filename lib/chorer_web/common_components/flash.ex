@@ -4,7 +4,7 @@ defmodule ChorerWeb.CommonComponents.Flash do
   prop type, :atom, required: true, values: [:error, :info]
   prop content, :string
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div :if={@content} class={"rounded-md p-1 #{bg_class(@type)}"}>

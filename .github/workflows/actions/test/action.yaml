@@ -1,0 +1,48 @@
+name: 'Run tests'
+description: 'Run CI tests'
+
+runs:
+  using: "composite"
+  steps:
+    - run: echo "SSH_AUTH_SOCK=/tmp/ssh_agent.sock" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Fetch deps
+      run: mix deps.get
+      shell: bash
+
+    - name: Compile project
+      run: mix compile --warnings-as-errors
+      shell: bash
+
+    - name: Run linter checks
+      run: mix credo list
+      shell: bash
+
+    - name: Check code format
+      run: mix format --check-formatted
+      shell: bash
+
+    - name: Check surface code format
+      run: mix surface.format --check-formatted
+      shell: bash
+
+    - name: "Reset database"
+      run: MIX_ENV=test mix ecto.reset
+      shell: bash
+
+    - name: Run tests
+      run: mix test
+      shell: bash
+
+    - name: Check migrations reversibility
+      run: MIX_ENV=test mix ecto.rollback --all
+      shell: bash
+
+    - name: Check OTP release
+      run: |
+        mix release --overwrite
+
+        # generate config and load to env vars, so release can use the correct database
+        set -a && source <(MIX_ENV=test mix run -e "IO.puts(ChorerConfig.template())" | egrep "#.*=" | sed "s/# //")
+      shell: bash

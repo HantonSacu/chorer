@@ -24,7 +24,11 @@ defmodule ChorerWeb.Friends do
     ~F"""
     <div class="min-h-screen bg-gradient-to-br from-brevity-gray to-brevity-dark flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="container mx-auto">
-        <div class="grid grid-rows-1 flex justify-center justify-content items-strech", style="translate: 0% 20%;">
+        <div
+          class="grid grid-rows-1 flex justify-center justify-content items-strech"
+          ,
+          style="translate: 0% 20%;"
+        >
           <div class="text-3xl font-extrabold text-white self-center flex ml-10 justify-center mb-2">
             <div class="flex flex-col justify-center items-center">
               Friends
@@ -52,7 +56,9 @@ defmodule ChorerWeb.Friends do
               Friends
             </div>
             <div :for={friend <- @friends} class="text-sm flex justify-between">
-              <div class="m-1"> {friend.first_name} {friend.last_name} </div>
+              <div class="m-1">
+                {friend.first_name} {friend.last_name}
+              </div>
               <button
                 type="button"
                 :on-click="unfriend"
@@ -66,7 +72,9 @@ defmodule ChorerWeb.Friends do
               Others
             </div>
             <div :for={account <- @accounts} class="text-sm flex justify-between">
-              <div class="m-1"> {account.first_name} {account.last_name} </div>
+              <div class="m-1">
+                {account.first_name} {account.last_name}
+              </div>
               <button
                 type="button"
                 :on-click={friend_action(@current_user, account)}
@@ -89,7 +97,7 @@ defmodule ChorerWeb.Friends do
 
     case Chorer.befriend(current_user.id, id) do
       :ok -> {:noreply, socket |> put_flash(:info, "Friend added.") |> load_data()}
-      {:error, _changeset} -> socket |> put_flash(:error, "Something went wrong.")
+      {:error, _changeset} -> put_flash(socket, :error, "Something went wrong.")
     end
   end
 
@@ -98,7 +106,7 @@ defmodule ChorerWeb.Friends do
 
     case Chorer.unfriend(current_user.id, id) do
       :ok -> {:noreply, socket |> put_flash(:info, "Friend removed.") |> load_data()}
-      {:error, _changeset} -> socket |> put_flash(:error, "Something went wrong.")
+      {:error, _changeset} -> put_flash(socket, :error, "Something went wrong.")
     end
   end
 

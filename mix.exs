@@ -5,11 +5,12 @@ defmodule Chorer.MixProject do
     [
       app: :chorer,
       version: "0.1.0",
-      elixir: "~> 1.12",
+      elixir: "~> 1.13",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      releases: releases(),
       deps: deps()
     ]
   end
@@ -41,9 +42,9 @@ defmodule Chorer.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.0", override: true},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.17.5"},
+      {:phoenix_live_view, "~> 0.18.0"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.6"},
+      {:phoenix_live_dashboard, "~> 0.7"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:telemetry_metrics, "~> 0.6"},
@@ -51,10 +52,9 @@ defmodule Chorer.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:surface, "~> 0.8.4"},
-      {:surface_formatter, "~> 0.6.0"},
+      {:surface, "~> 0.9.0"},
       {:surface_heroicons, "~> 0.6.0"},
-      {:vbt, git: "git@github.com:HantonSacu/elixir_common"}
+      {:vbt, git: "https://github.com/VeryBigThings/elixir_common.git"}
     ]
   end
 
@@ -70,6 +70,7 @@ defmodule Chorer.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      release: release_steps(),
       "assets.deploy": [
         "cmd --cd assets npm run deploy",
         "cmd --cd assets cp -r ./static/images ../priv/static/assets",
@@ -77,5 +78,29 @@ defmodule Chorer.MixProject do
         "phx.digest"
       ]
     ]
+  end
+
+  defp releases() do
+    [
+      chorer: [
+        include_executables_for: [:unix],
+        steps: [:assemble, &copy_bin_files/1]
+      ]
+    ]
+  end
+
+  # solution from https://elixirforum.com/t/equivalent-to-distillerys-boot-hooks-in-mix-release-elixir-1-9/23431/2
+  defp copy_bin_files(release) do
+    File.cp_r("rel/bin", Path.join(release.path, "bin")) |> IO.inspect()
+    release
+  end
+
+  defp release_steps do
+    if Mix.env() != :prod or System.get_env("SKIP_ASSETS") == "true" or not File.dir?("assets") do
+      []
+    else
+      ["cmd --cd assets npm install", "assets.deploy"]
+    end
+    |> Enum.concat(["release"])
   end
 end

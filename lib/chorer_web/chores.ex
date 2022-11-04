@@ -4,7 +4,7 @@ defmodule ChorerWeb.Chores do
   import ChorerWeb.Authentication, only: [check_live_session: 2]
   import Ecto.Changeset
 
-  alias ChorerWeb.CommonComponents.{Flash, CheckBox, TextInput}
+  alias ChorerWeb.CommonComponents.{CheckBox, Flash, TextInput}
   alias Surface.Components.Link
 
   @changeset change(

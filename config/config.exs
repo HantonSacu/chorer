@@ -45,6 +45,11 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
+config :surface, :components, [
+  {Surface.Components.Form.ErrorTag,
+   default_translator: {BrevityWeb.Error.Helpers, :translate_error}}
+]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

@@ -15,7 +15,7 @@ defmodule ChorerWeb.Home do
 
   @impl Phoenix.LiveView
   def handle_params(params, _uri, socket),
-    do: {:noreply, socket |> assign(%{route_params: params})}
+    do: {:noreply, assign(socket, %{route_params: params})}
 
   @impl Phoenix.LiveView
   def render(assigns) do

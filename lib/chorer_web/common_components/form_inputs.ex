@@ -28,7 +28,7 @@ defmodule ChorerWeb.CommonComponents.TextInput do
   # password submissions value has to be set explicitly
   prop explicit_value_set, :boolean, default: false
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div>
@@ -89,7 +89,7 @@ for type <- ~w(email password) do
     prop placeholder, :string
     prop explicit_value_set, :boolean, default: type == "password"
 
-    @impl Phoenix.LiveComponent
+    @impl Surface.Component
     def render(assigns) do
       attributes =
         assigns
@@ -112,7 +112,7 @@ defmodule ChorerWeb.CommonComponents.TextDarkInput do
   prop form, :form, required: true
   prop name, :atom, required: true
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div>
@@ -140,7 +140,7 @@ defmodule ChorerWeb.CommonComponents.PasswordDarkInput do
   prop form, :form, required: true
   prop name, :atom, required: true
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div>
@@ -169,7 +169,7 @@ defmodule ChorerWeb.CommonComponents.CheckBox do
   prop name, :atom, required: true
   prop disabled, :boolean, default: false
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div>
@@ -196,7 +196,7 @@ defmodule ChorerWeb.CommonComponents.SelectInput do
   prop selected, :string
   prop style, :string
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div>
@@ -231,7 +231,7 @@ defmodule ChorerWeb.CommonComponents.DateInput do
   prop required, :boolean, default: false
   prop label?, :boolean, default: true
 
-  @impl Phoenix.LiveComponent
+  @impl Surface.Component
   def render(assigns) do
     ~F"""
     <div>

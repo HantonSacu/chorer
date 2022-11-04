@@ -1,4 +1,7 @@
 defmodule ChorerWeb.Support.TestHelpers do
+  @moduledoc """
+  Helpers for testing.
+  """
   alias VBT.TestHelper
 
   def register_account(params \\ []) do

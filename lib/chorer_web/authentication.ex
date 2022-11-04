@@ -1,6 +1,6 @@
 defmodule ChorerWeb.Authentication do
   import Plug.Conn
-  import Phoenix.Controller
+  import Phoenix.LiveView
 
   alias ChorerSchemas.Account
   alias ChorerWeb.Router.Helpers, as: Routes
@@ -85,12 +85,12 @@ defmodule ChorerWeb.Authentication do
     with user_token when not is_nil(user_token) <- Map.get(session, "user_token"),
          {:ok, user_data} <- verify_socket(socket, user_token),
          {:ok, user} <- load_account(user_data.id) do
-      Phoenix.LiveView.assign(socket, :current_user, user)
+      assign(socket, :current_user, user)
     else
       _ ->
         socket
-        |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        |> Phoenix.LiveView.push_redirect(to: "/")
+        |> put_flash(:error, "You must log in to access this page.")
+        |> push_redirect(to: "/")
     end
   end
 

@@ -17,12 +17,12 @@ defmodule Chorer.ChoresHandler do
     )
   end
 
-  defp handle_chores() do
+  defp handle_chores do
     Repo.transact(fn ->
       ChorerSchemas.Chore
       |> Repo.all()
       |> Enum.filter(&(&1.state == :done))
-      |> Enum.map(&update_chore(&1))
+      |> Enum.each(&update_chore(&1))
 
       {:ok, :done}
     end)
