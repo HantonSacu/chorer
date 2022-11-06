@@ -162,4 +162,72 @@ defmodule Chorer do
     end
   end
 
+  ####################
+  # CHORE MANAGEMENT #
+  ####################
+
+  @spec create_chore(String.t(), chore_params()) ::
+          {:ok, Chore.t()} | {:error, Ecto.Changeset.t()}
+  def create_chore(account_id, params) do
+    %Chore{}
+    |> change(Map.put(params, :account_id, account_id))
+    |> validate_required(required_chore_params())
+    |> validate_number(:mental_difficulty, greater_than: 0, less_than: 6)
+    |> validate_number(:physical_difficulty, greater_than: 0, less_than: 6)
+    |> Repo.insert()
+  end
+
+  @spec edit_chore(String.t(), chore_params()) ::
+          {:ok, Chore.t()} | {:error, String.t() | Ecto.Changeset.t()}
+  def edit_chore(chore_id, params) do
+    with {:ok, chore} <- Repo.fetch(Chore, chore_id), do: chore |> change(params) |> Repo.update()
+  end
+
+  @spec delete_chore(String.t()) :: {:ok, Chore.t()} | {:error, Ecto.Changeset.t()}
+  def delete_chore(id), do: Repo.delete(%Chore{id: id})
+
+  @spec take_on_chore(String.t(), String.t()) ::
+          {:ok, Chore.t()} | {:error, String.t() | Ecto.Changeset.t()}
+  def take_on_chore(account_id, chore_id) do
+    with {:ok, chore} <- Repo.fetch(Chore, chore_id),
+         :ok <- VBT.validate(is_nil(chore.assignee_id), "Already assigned.") do
+      chore |> change(%{assignee_id: account_id, state: :in_progress}) |> Repo.update()
+    end
+  end
+
+  @spec finish_chore(String.t(), String.t()) ::
+          {:ok, Chore.t()} | {:error, String.t() | Ecto.Changeset.t()}
+  def finish_chore(account_id, chore_id) do
+    with {:ok, chore} <- Repo.fetch_by(Chore, %{id: chore_id, assignee_id: account_id}),
+         {:ok, _score} <- insert_score(account_id, chore) do
+      chore |> change(%{state: :done}) |> Repo.update()
+    end
+  end
+
+  @spec offer_chore(String.t(), String.t()) ::
+          {:ok, Chore.t()} | {:error, String.t() | Ecto.Changeset.t()}
+  def offer_chore(account_id, chore_id) do
+    with {:ok, chore} <- Repo.fetch_by(Chore, %{id: chore_id, assignee_id: account_id}) do
+      chore |> change(%{assignee_id: nil, state: :available}) |> Repo.update()
+    end
+  end
+
+  @spec account_chores(String.t()) :: [Chore.t()] | {:error, Ecto.Changeset.t()}
+  def account_chores(account_id) do
+    with {:ok, account} <- fetch_account(account_id) do
+      ids = [account.id] ++ Enum.map(account.friends, & &1.id)
+      Repo.all(from(chore in Chore, where: chore.account_id in ^ids))
+    end
+  end
+
+  @spec scores(Account.t(), atom()) :: [{String.t(), integer()}] | {:error, Ecto.Changeset.t()}
+  def scores(account, period) do
+    Enum.map(account.friends ++ [account], fn account ->
+      name = "#{String.at(account.first_name, 0)}. #{String.at(account.last_name, 0)}."
+      scores = Repo.all(score_query(account.id, period))
+      points = Enum.reduce(scores, 1, &(&2 + &1.points))
+      {name, points}
+    end)
+  end
+
 end
