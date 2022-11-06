@@ -230,4 +230,56 @@ defmodule Chorer do
     end)
   end
 
+  ###########
+  # HELPERS #
+  ###########
+
+  defp score_query(account_id, :today),
+    do: from(Score, where: [account_id: ^account_id, inserted_at: from_now(1, "day")])
+
+  defp score_query(account_id, :this_week),
+    do: from(Score, where: [account_id: ^account_id, inserted_at: from_now(7, "day")])
+
+  defp score_query(account_id, :this_month),
+    do: from(Score, where: [account_id: ^account_id, inserted_at: from_now(1, "month")])
+
+  defp score_query(account_id, :all_time), do: from(Score, where: [account_id: ^account_id])
+
+  defp activate(id) do
+    case Repo.get(Account, id) do
+      %Account{verified: false} = account -> verify(account)
+      _ -> {:error, "Account already active"}
+    end
+  end
+
+  defp accounts_config do
+    %{
+      repo: Chorer.Repo,
+      schemas: %{
+        account: Account,
+        token: Token
+      },
+      login_field: :email,
+      password_hash_field: :password_hash,
+      min_password_length: 8
+    }
+  end
+
+  defp insert_score(account_id, chore) do
+    points = (chore.mental_difficulty + chore.physical_difficulty) * chore.duration
+    Repo.insert(%Score{points: points, account_id: account_id})
+  end
+
+  defp required_chore_params do
+    [
+      :title,
+      :description,
+      :state,
+      :frequency,
+      :repeating?,
+      :duration,
+      :mental_difficulty,
+      :physical_difficulty
+    ]
+  end
 end
