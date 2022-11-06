@@ -15,9 +15,9 @@ defmodule Chorer.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Chorer.PubSub},
       # Start the Endpoint (http/https)
-      ChorerWeb.Endpoint
+      ChorerWeb.Endpoint,
       # Start a worker by calling: Chorer.Worker.start_link(arg)
-      # {Chorer.Worker, arg}
+      Chorer.ChoresHandler
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
