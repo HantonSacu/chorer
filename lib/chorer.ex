@@ -1,7 +1,6 @@
 defmodule Chorer do
-  @moduledoc """
-  Chorer keeps the contexts that define your domain
-  and business logic.
+  import Ecto.Changeset
+  import Ecto.Query
 
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
