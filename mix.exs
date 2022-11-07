@@ -10,6 +10,7 @@ defmodule Chorer.MixProject do
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      releases: releases(),
       deps: deps()
     ]
   end
@@ -69,7 +70,37 @@ defmodule Chorer.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      release: release_steps(),
+      "assets.deploy": [
+        "cmd --cd assets npm run deploy",
+        "cmd --cd assets cp -r ./static/images ../priv/static/assets",
+        "esbuild default --minify",
+        "phx.digest"
+      ]
     ]
+  end
+
+  defp releases() do
+    [
+      chorer: [
+        include_executables_for: [:unix],
+        steps: [:assemble, &copy_bin_files/1]
+      ]
+    ]
+  end
+
+  # solution from https://elixirforum.com/t/equivalent-to-distillerys-boot-hooks-in-mix-release-elixir-1-9/23431/2
+  defp copy_bin_files(release) do
+    File.cp_r("rel/bin", Path.join(release.path, "bin")) |> IO.inspect()
+    release
+  end
+
+  defp release_steps do
+    if Mix.env() != :prod or System.get_env("SKIP_ASSETS") == "true" or not File.dir?("assets") do
+      []
+    else
+      ["cmd --cd assets npm install", "assets.deploy"]
+    end
+    |> Enum.concat(["release"])
   end
 end
