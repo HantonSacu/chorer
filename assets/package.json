@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "deploy": "NODE_ENV=production tailwindcss --minify -i css/app.css -o ../priv/static/assets/app.css"
+  },
+  "dependencies": {
+    "@capacitor/android": "^4.4.0",
+    "@capacitor/core": "^4.4.0",
+    "tailwind-caret-color": "^1.1.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^4.4.0",
+    "tailwindcss": "^2.2.8"
+  }
+}
