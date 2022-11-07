@@ -1,4 +1,6 @@
-defmodule ChorerWeb.ErrorHelpers do
+# credo:disable-for-this-file Credo.Check.Readability.Specs
+
+defmodule ChorerWeb.Error.Helpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -10,8 +12,8 @@ defmodule ChorerWeb.ErrorHelpers do
   """
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->
-      content_tag(:span, translate_error(error),
-        class: "invalid-feedback",
+      content_tag(:p, translate_error(error),
+        class: "mt-2 text-sm text-red-600 first-letter:uppercase",
         phx_feedback_for: input_name(form, field)
       )
     end)
