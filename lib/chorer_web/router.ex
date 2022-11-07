@@ -1,23 +1,42 @@
 defmodule ChorerWeb.Router do
   use ChorerWeb, :router
 
+  import ChorerWeb.Authentication
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, {ChorerWeb.LayoutView, :root}
+    plug :put_root_layout, {ChorerWeb.Layout.View, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug VBT.Auth
   end
 
   scope "/", ChorerWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    post "/register", Auth.Controller, :register, as: :account
+    live "/register", Auth.Register, :register, as: :account
+
+    post "/", Auth.Controller, :login, as: :account
+    live "/", Auth.Login, :login, as: :account
+  end
+
+  scope "/home", ChorerWeb do
+    pipe_through [:browser, :require_user]
+
+    live "/", Home, :home, as: :account
+
+    post "/logout", Auth.Controller, :logout, as: :account
+
+    live "/chores", Chores, :chores, as: :account
+    live "/friends", Friends, :friends, as: :account
+    live "/statistics", Statistics, :statistics, as: :account
   end
 
   # Other scopes may use custom stacks.

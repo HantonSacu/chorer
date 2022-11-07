@@ -1,0 +1,6 @@
+{
+  "appId": "chorer.app",
+  "appName": "chorer",
+  "webDir": "/home/ken/Work/chorer/lib/chorer_web/layout/templates/",
+  "bundledWebRuntime": false
+}
