@@ -7,6 +7,12 @@
 # General application configuration
 import Config
 
+config :chorer, Chorer.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  migration_primary_key: [type: :binary_id],
+  migration_timestamps: [type: :utc_datetime_usec],
+  otp_app: :chorer
+
 config :chorer,
   ecto_repos: [Chorer.Repo]
 
@@ -38,6 +44,11 @@ config :esbuild,
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
+
+config :surface, :components, [
+  {Surface.Components.Form.ErrorTag,
+   default_translator: {BrevityWeb.Error.Helpers, :translate_error}}
+]
 
 # Configures Elixir's Logger
 config :logger, :console,
